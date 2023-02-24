@@ -1,0 +1,115 @@
+---
+title: "Abraham_Assignment_02"
+author: "Reuben Abraham"
+date: "2023-02-21"
+output: github_document
+---
+```{r read_csv_tibble}
+library(readr)
+tibble1 <- read.csv(paste0(getwd(), "/../Input/Project02_SuperStoreOrders.csv"))
+
+```
+
+```{r summary_statistic}
+# Create a summary statistic and provide your analysis/observations. 
+summary(tibble1)
+#' It appears that the average quantity of items ordered is 3.477. The average 
+#' discount is 14.29%, which seems to indicate that high discounts are not
+#' very common for SuperStore. Additionally, the average profit of SuperStore is
+#' $28.64, which is not very high. This seems to indicate that Superstore
+#' relies more on selling large quantities of items rather than high value items
+
+```
+
+```{r bar_graph}
+# Analyze how the orders are made over the years and by segments. Plot the 
+# below graph. Make sure the name of “X-axis” should match. Colors could vary. 
+library(ggplot2)
+ggplot(tibble1) + 
+  geom_bar(aes(x = year, fill=segment), ) 
+
+
+```
+
+```{r best_seller_bar_graph}
+#Which segment is the best seller in the entire dataset? How do you compare the 
+#segments? Provide a plot to confirm your claim about the best seller.  
+library(ggplot2)
+#sales_by_segment_count <- aggregate(segment~sales+as.factor(sales), 
+#                                                data = tibble1, length)
+#names(sales_by_segment_count) <- c("segment","sales", "ct")
+
+#ggplot(sales_by_segment_count) + 
+#  geom_bar(aes(x = segment, y=ct), ) 
+
+
+library(dplyr)
+
+
+grp_tbl <- tibble1 %>% group_by(segment)
+grp_tbl$sales <- gsub(",", "", grp_tbl$sales )
+grp_tbl$numeric_sales <- as.numeric(grp_tbl$sales)
+
+#agg_tbl <- grp_tbl %>% summarise(sum(numeric_sales))
+
+
+ggplot(grp_tbl) +
+  geom_bar(aes (x= segment, y= sum(numeric_sales) ), stat = "identity")
+ 
+#consumer sales appear to be the biggest customer segment.
+
+
+```
+
+
+```{r regional_sideways_bar_chart}
+
+ggplot(copy_tibble1) +
+  geom_bar(aes(x = reorder(factor(region), region, length), fill=region)) +
+  coord_flip() 
+
+# it appears that Central is the region with the most orders, and 
+# Canada is the region with the least amount of orders.
+  
+
+```
+
+
+```{r profit graphs by region}
+#Use the below code snippet and complete the rest to create the profits graph by region.
+#Hint: You are creating a bar plot in a polar coordinate system. 
+
+library(dplyr)
+
+tibble1 %>% 
+  mutate(total_profit = sum(profit)) %>%
+  group_by(region) %>%
+  summarize(total_profit = sum(profit)) %>%
+  ggplot() + geom_bar(aes(y = total_profit, x = region) , stat = "identity", 
+                      ) + coord_polar()
+ 
+
+
+```
+
+```{r total profit }
+#Include a density plot to infer the total profit made. Include the orders that
+#have profits within the range of [-125, 125].
+
+ggplot(tibble1) + 
+  geom_density(aes(x=profit)) +
+    scale_x_continuous(limits = c(-125, 125))
+#It appears that most of the time, the company is making a low amount of 
+#profit for their sold items. 
+
+
+```
+
+
+Honors Pledge:
+As a student of the Dr. Robert B. Pamplin Jr. School of Business Administration I have read 
+and strive to uphold the University’s Code of Academic Integrity and promote ethical behavior. In doing so, I pledge on my honor that I have not given, received, or used any unauthorized materials or assistance on this examination or assignment.  I further pledge that I have not engaged in cheating, forgery, or plagiarism and I have cited all appropriate sources. 
+
+Student Signature:  ______Reuben Abraham__________
+
+
